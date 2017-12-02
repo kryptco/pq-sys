@@ -23,6 +23,17 @@ fn main() {
         let path = replace_homebrew_path_on_mac(path);
         println!("cargo:rustc-link-search=native={}", path);
     }
+
+    if let Ok(target) = env::var("TARGET") {
+        use std::ascii::AsciiExt;
+        let pq_lib_dir_for_target = &format!("PQ_LIB_DIR_{}", target.to_ascii_uppercase().replace("-", "_"));
+        if let Some(pq_lib_dir_path) = env::var_os(pq_lib_dir_for_target) {
+            if let Ok(pq_lib_dir_string) = pq_lib_dir_path.into_string() {
+                println!("cargo:rustc-link-search=native={}", pq_lib_dir_string);
+            }
+        }
+    }
+
     static_or_not();
 }
 
